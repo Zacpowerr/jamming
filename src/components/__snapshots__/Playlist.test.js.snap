@@ -1,0 +1,29 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Playlist should render correctly 1`] = `
+<div>
+  <div>
+    <h1>
+      Playlist
+    </h1>
+    <input
+      class="input mx-10"
+      id="playlist-name"
+      type="text"
+      value="New Playlist"
+    />
+    <div
+      class="tracklist"
+    >
+      <h2>
+        Track List
+      </h2>
+    </div>
+    <button
+      class="button"
+    >
+      Save to Spotify
+    </button>
+  </div>
+</div>
+`;
