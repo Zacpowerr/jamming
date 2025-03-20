@@ -3,79 +3,21 @@ import "./App.css";
 import SearchBar from "./components/SearchBar";
 import SearchResults from "./components/SearchResults";
 import Playlist from "./components/Playlist";
+import Spotify from "./scripts/Spotify";
 
 function App() {
   const [searchResults, setSearchResults] = useState([]);
+  const spotify = new Spotify();
   const [trackList, setTrackList] = useState([]);
   function handleSearch() {
     console.log("Search clicked");
     const searchTerm = document.querySelector("input").value;
     // Mock call to Spotify API
     console.log(`Searching for ${searchTerm}...`);
-    const searchResults = [
-      {
-        id: "1",
-        name: "Tears in Heaven",
-        album: "Rush (Soundtrack)",
-        artist: "Eric Clapton",
-      },
-      {
-        id: "2",
-        name: "Locked Out of Heaven",
-        album: "Unorthodox Jukebox",
-        artist: "Bruno Mars",
-      },
-      {
-        id: "3",
-        name: "Heaven",
-        album: "Bryan Adams Anthology",
-        artist: "Bryan Adams",
-      },
-      {
-        id: "4",
-        name: "Stairway to Heaven",
-        album: "Led Zeppelin IV",
-        artist: "Led Zeppelin",
-      },
-      {
-        id: "5",
-        name: "Just Like Heaven",
-        album: "Kiss Me, Kiss Me, Kiss Me",
-        artist: "The Cure",
-      },
-      {
-        id: "6",
-        name: "Heaven Sent",
-        album: "Afrodisiac",
-        artist: "Brandy",
-      },
-      {
-        id: "7",
-        name: "Heaven Is a Place on Earth",
-        album: "Heaven on Earth",
-        artist: "Belinda Carlisle",
-      },
-      {
-        id: "8",
-        name: "Heaven Knows",
-        album: "Ceremonials",
-        artist: "Florence + The Machine",
-      },
-      {
-        id: "9",
-        name: "If Heaven Wasn’t So Far Away",
-        album: "Outlaws Like Me",
-        artist: "Justin Moore",
-      },
-      {
-        id: "10",
-        name: "Almost Heaven",
-        album: "Dream Your Life Away",
-        artist: "Vance Joy",
-      },
-    ];
-    console.log(searchResults);
-    setSearchResults(searchResults);
+    spotify.getAccessToken();
+    spotify.search(searchTerm).then((results) => {
+      setSearchResults(results);
+    });
   }
   function addTrackToTrackList(track) {
     console.log(`Adding ${track.name} to track list`);
@@ -91,18 +33,35 @@ function App() {
     console.log(`Removing ${track.name} from track list`);
     setTrackList(trackList.filter((t) => t.id !== track.id));
   }
-  function handleSave() {
+  function handleSave(playlistName) {
     console.log(`Saving ${trackList.length} tracks to Spotify`);
-    console.log(trackList);
-    trackList.forEach((track) => {
-      console.log(`Saving ${track.name} to Spotify`);
+    const trackUris = trackList.map((track) => track.uri);
+    spotify.getAccessToken();
+    spotify.savePlaylist(playlistName, trackUris).then(() => {
+      alert(`Saved ${trackList.length} tracks to Spotify`);
+      setTrackList([]);
     });
-    alert(`Saved ${trackList.length} tracks to Spotify`);
-    setTrackList([]);
+  }
+
+  function handleSignIn() {
+    console.log("Signing in...");
+    spotify.getAccessToken();
   }
   return (
     <div className="App">
-      <header className="App-header">Jamming</header>
+      <header className="App-header">
+        <h1>Jamming</h1>
+        {!window.sessionStorage.getItem("accessToken") && (
+          <button
+            className="mb-2"
+            onClick={() => {
+              handleSignIn();
+            }}
+          >
+            Sign in
+          </button>
+        )}
+      </header>
       <main className="container">
         <div className="search-container">
           <SearchBar handleSearch={handleSearch} />
