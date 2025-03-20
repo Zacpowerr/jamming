@@ -24,7 +24,7 @@ function Playlist({ trackList, handleSave, removeTrackFromTrackList }) {
             alert("Please add tracks to the playlist");
             return;
           } else {
-            handleSave();
+            handleSave(document.getElementById("playlist-name").value);
           }
         }}
       >
